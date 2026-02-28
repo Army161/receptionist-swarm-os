@@ -1,0 +1,25 @@
+{
+  "name": "receptionist-swarm-os",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "services/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev --workspace=services/api",
+    "dev:console": "npm run dev --workspace=apps/console",
+    "build:shared": "npm run build --workspace=packages/shared",
+    "build:api": "npm run build --workspace=services/api",
+    "build:console": "npm run build --workspace=apps/console",
+    "build": "npm run build:shared && npm run build:api && npm run build:console",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "db:migrate": "npm run migration:run --workspace=services/api",
+    "db:seed": "npm run seed --workspace=services/api"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
