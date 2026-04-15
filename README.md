@@ -202,6 +202,29 @@ The seed script creates 3 demo AgentPacks:
 - **Dental Pack** — New patient intake, insurance verification, emergency dental
 - **MedSpa Pack** — Consultation booking, treatment info, contraindication screening
 
+## Security
+
+### SSRF Protection (Crawler)
+
+The onboarding crawler (`services/api/src/onboarding/crawler.service.ts`) includes comprehensive SSRF (Server-Side Request Forgery) protection:
+
+| Protection | Detail |
+|------------|--------|
+| **Scheme allowlist** | Only `http://` and `https://` — blocks `file://`, `ftp://`, `javascript:`, etc. |
+| **Hostname blocklist** | `localhost`, `metadata.google.internal`, `metadata.google.com` |
+| **Private IP ranges** | RFC-1918 (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`), loopback (`127.0.0.0/8`), link-local (`169.254.0.0/16`), null (`0.0.0.0/8`) |
+| **Cloud metadata IPs** | `169.254.169.254` (AWS/GCP/Azure), `100.100.100.200` (Alibaba) |
+| **IPv6 blocked ranges** | `::1` (loopback), `fe80::` (link-local), `fc00::`/`fd00::` (unique-local) |
+| **DNS resolution check** | Resolves hostnames before fetch and re-validates every resolved IP against the blocklist — prevents DNS rebinding attacks |
+| **Redirect prevention** | `maxRedirects: 0` — prevents open-redirect SSRF bypasses |
+| **Timeout** | 10 second request timeout to prevent slowloris/resource exhaustion |
+| **Per-URL validation** | Every URL (initial + discovered links) is validated before fetching |
+
+Run SSRF tests:
+```bash
+cd services/api && npx jest src/onboarding/crawler.service.spec.ts --verbose
+```
+
 ## TODO Backlog (Deferred Features)
 
 ### V1 (8-12 weeks)

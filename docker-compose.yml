@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:16-alpine
@@ -37,7 +35,8 @@ services:
     ports:
       - '4000:4000'
     env_file:
-      - .env
+      - path: .env
+        required: false
     environment:
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/receptionist_swarm
       REDIS_URL: redis://redis:6379
